@@ -18,8 +18,13 @@ public class TestFrame {
         //canvas.addParticle (new Particle (90, 150, 1, 0, 10));
 		//canvas.addParticle (new Particle (20, 150, 2, 0, 20));
 		//canvas.addParticle (new Particle (200, 150, -2, 0, 40));
-		canvas.addParticle (new Particle (380, 150, 4, 0, 20));
-		canvas.addParticle (new Particle (20, 20, 1, 1, 20));
+		//canvas.addParticle (new Particle (380, 150, 4, 0, 20));
+		//canvas.addParticle (new Particle (20, 20, 1, 1, 20));
+                
+                for(int i = 0; i < 100; i++){
+                    canvas.addParticle (new Particle (i*3, i*3+1, 1, 1, 1));
+                }
+                
 		canvas.startAnimations ();
 	}
 }
