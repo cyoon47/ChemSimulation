@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class CanvasPanel extends JPanel {
-	private boolean debugEnergy = true; 
+	private boolean debugEnergy = false; 
 	private float width;
 	private float height;
 	private Timer animator;
@@ -70,6 +70,8 @@ public class CanvasPanel extends JPanel {
 			p.setVelocity (p.getVelocity ().dx, -p.getVelocity ().dy);
 		}
 		
+		p.setPosition (p.getNewX(), p.getNewY ());
+		
 		/*newX = p.getNewX ();
 		newY = p.getNewY ();
 		
@@ -87,7 +89,7 @@ public class CanvasPanel extends JPanel {
 		for (Particle o : particles) {
 			if (p != o) {
 				if (p.collidesWith (o)) {
-					System.out.println ("==================================");
+					//System.out.println ("==================================");
 					//System.out.println ("Collision!");
 					logEnergyDebug ("Initial");
 					
@@ -104,7 +106,7 @@ public class CanvasPanel extends JPanel {
 					else {
 						phi = (float) Math.atan ((p.getY () - o.getY ()) / (p.getX () - o.getX ()));
 					}
-					System.out.println ("phi = " + phi);
+					//System.out.println ("phi = " + phi);
 					
 					//Transform velocities to rotated coordinate system
 					Vector2D pVelRefInit = new Vector2D (
@@ -152,7 +154,7 @@ public class CanvasPanel extends JPanel {
 					o.setPosition (o.getNewX(), o.getNewY ());
 					
 					logEnergyDebug ("After Collision");
-					System.out.println ("==================================");
+					//System.out.println ("==================================");
 					
 					if (p.collidesWith (o)) {
 						System.out.println ("oh no");
@@ -173,7 +175,7 @@ public class CanvasPanel extends JPanel {
 		if (particles.size () > 0) {
 			for (int i = 0; i < particles.size (); i++) {
 				Particle p = particles.get (i);
-				g2.draw (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
+				g2.fill (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
 			}
 		}
 	}
