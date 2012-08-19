@@ -9,12 +9,11 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class CanvasPanel extends JPanel {
-	private boolean debugEnergy = false; 
+	private boolean debugEnergy = true; 
 	private float width;
 	private float height;
 	private Timer animator;
 	private ArrayList <Particle> particles;
-        private int count = 0;
 	
 	public CanvasPanel (int width, int height, int fps) {
 		this.width = (float) width;
@@ -60,7 +59,6 @@ public class CanvasPanel extends JPanel {
 	}
 	
 	private void updateParticle (Particle p) {
-		boolean updated = false;
 		float newX = p.getNewX ();
 		float newY = p.getNewY ();
 		
@@ -72,10 +70,10 @@ public class CanvasPanel extends JPanel {
 			p.setVelocity (p.getVelocity ().dx, -p.getVelocity ().dy);
 		}
 		
-		newX = p.getNewX ();
+		/*newX = p.getNewX ();
 		newY = p.getNewY ();
 		
-		/*while (newX - p.getR () < 0 || newX + p.getR () > width || newY - p.getR () < 0 || newY + p.getR () > height) {
+		while (newX - p.getR () < 0 || newX + p.getR () > width || newY - p.getR () < 0 || newY + p.getR () > height) {
 			newX = p.getNewX ();
 			newY = p.getNewY ();
 			p.setPosition (newX, newY);
@@ -89,7 +87,7 @@ public class CanvasPanel extends JPanel {
 		for (Particle o : particles) {
 			if (p != o) {
 				if (p.collidesWith (o)) {
-					//System.out.println ("==================================");
+					System.out.println ("==================================");
 					//System.out.println ("Collision!");
 					logEnergyDebug ("Initial");
 					
@@ -105,8 +103,8 @@ public class CanvasPanel extends JPanel {
 					}
 					else {
 						phi = (float) Math.atan ((p.getY () - o.getY ()) / (p.getX () - o.getX ()));
-						
 					}
+					System.out.println ("phi = " + phi);
 					
 					//Transform velocities to rotated coordinate system
 					Vector2D pVelRefInit = new Vector2D (
@@ -152,27 +150,19 @@ public class CanvasPanel extends JPanel {
 					
 					p.setPosition (p.getNewX(), p.getNewY ());
 					o.setPosition (o.getNewX(), o.getNewY ());
-					updated = true;
 					
 					logEnergyDebug ("After Collision");
-					//System.out.println ("==================================");
+					System.out.println ("==================================");
 					
-					//Screws up positions
 					if (p.collidesWith (o)) {
 						System.out.println ("oh no");
-						//find a better fix
-						/*p.setVelocity (-p.getVelocity ().dx, -p.getVelocity ().dy);
-						p.setPosition (p.getNewX (), p.getNewY ());
-						o.setPosition (o.getNewX(), o.getNewY ());*/
 					}
 				}
 			}
 		}
 		
 		//Done
-		if (/*!updated*/true) {
-			p.setPosition (p.getNewX (), p.getNewY ());
-		}
+		p.setPosition (p.getNewX (), p.getNewY ());
 	}
 	
 	@Override

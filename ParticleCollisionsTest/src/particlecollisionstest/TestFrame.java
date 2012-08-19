@@ -15,9 +15,10 @@ public class TestFrame {
 		frame.add (canvas);
 		frame.pack ();
 		
-		canvas.addParticle (new Particle (20, 150, 2, 0, 20));
+		//canvas.addParticle (new Particle (20, 150, 2, 0, 20));
 		canvas.addParticle (new Particle (200, 150, -2, 0, 40));
-		canvas.addParticle (new Particle (380, 150, 4, 0, 20));
+		//canvas.addParticle (new Particle (380, 150, 4, 0, 20));
+		canvas.addParticle (new Particle (20, 20, 1, 1, 20));
 		canvas.startAnimations ();
 	}
 }
