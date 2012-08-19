@@ -138,11 +138,11 @@ public class CanvasPanel extends JPanel {
 					
 					//Transform velocities back to original system
 					Vector2D pVelFinal = new Vector2D (
-						(float) (pVelRefFinal.dx * Math.cos (phi) + pVelRefFinal.dy * Math.sin (phi)),
+						(float) (pVelRefFinal.dx * Math.cos (phi) - pVelRefFinal.dy * Math.sin (phi)),
 						(float) (pVelRefFinal.dx * Math.sin (phi) + pVelRefFinal.dy * Math.cos (phi)));
 					
 					Vector2D oVelFinal = new Vector2D (
-						(float) (oVelRefFinal.dx * Math.cos (phi) + oVelRefFinal.dy * Math.sin (phi)),
+						(float) (oVelRefFinal.dx * Math.cos (phi) - oVelRefFinal.dy * Math.sin (phi)),
 						(float) (oVelRefFinal.dx * Math.sin (phi) + oVelRefFinal.dy * Math.cos (phi)));
 					
 					p.setVelocity (pVelFinal);
