@@ -75,12 +75,12 @@ public class CanvasPanel extends JPanel {
 		newX = p.getNewX ();
 		newY = p.getNewY ();
 		
-		while (newX - p.getR () < 0 || newX + p.getR () > width || newY - p.getR () < 0 || newY + p.getR () > height) {
+		/*while (newX - p.getR () < 0 || newX + p.getR () > width || newY - p.getR () < 0 || newY + p.getR () > height) {
 			newX = p.getNewX ();
 			newY = p.getNewY ();
 			p.setPosition (newX, newY);
 			updated = true;
-		}
+		}*/
 		
 		//Collision culling here
 		//...
