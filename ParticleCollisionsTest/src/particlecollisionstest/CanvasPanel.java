@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.util.*;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -14,11 +15,13 @@ public class CanvasPanel extends JPanel {
 	private float height;
 	private Timer animator;
 	private ArrayList <Particle> particles;
+	private QuadTree qTree;
 	
 	public CanvasPanel (int width, int height, int fps) {
 		this.width = (float) width;
 		this.height = (float) height;
 		this.setPreferredSize (new Dimension (width, height));
+		qTree = new QuadTree (this.width, this.height);
 		particles = new ArrayList <> ();
 		animator = new Timer (1000/fps, new ActionListener () {
 			@Override
@@ -58,6 +61,10 @@ public class CanvasPanel extends JPanel {
 		}
 	}
 	
+	private ArrayList <Particle> cullNonCollidingParticles (ArrayList <Particle> originalList) {
+		return originalList;
+	}
+	
 	private void updateParticle (Particle p) {
 		float newX = p.getNewX ();
 		float newY = p.getNewY ();
@@ -69,9 +76,7 @@ public class CanvasPanel extends JPanel {
 		if (newY - p.getR () < 0 || newY + p.getR () > height) {
 			p.setVelocity (p.getVelocity ().dx, -p.getVelocity ().dy);
 		}
-		
-		p.setPosition (p.getNewX(), p.getNewY ());
-		
+				
 		/*newX = p.getNewX ();
 		newY = p.getNewY ();
 		
@@ -84,6 +89,8 @@ public class CanvasPanel extends JPanel {
 		
 		//Collision culling here
 		//...
+		qTree.createTree (particles);
+		
 		
 		//Collision
 		for (Particle o : particles) {
@@ -165,6 +172,7 @@ public class CanvasPanel extends JPanel {
 		
 		//Done
 		p.setPosition (p.getNewX (), p.getNewY ());
+		
 	}
 	
 	@Override
@@ -172,10 +180,17 @@ public class CanvasPanel extends JPanel {
 		super.paintComponent (g);
 		Graphics2D g2 = (Graphics2D) g;
 		
+		System.out.println ("Number of lines: " + qTree.getGraphicalView ().size ());
+		for (int i = 0; i < qTree.getGraphicalView ().size (); i++) {
+			g2.draw ((Shape) qTree.lines.get (i));
+		}
+		
 		if (particles.size () > 0) {
 			for (int i = 0; i < particles.size (); i++) {
 				Particle p = particles.get (i);
 				g2.fill (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
+				
+				
 			}
 		}
 	}

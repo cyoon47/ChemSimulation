@@ -1,6 +1,6 @@
 package particlecollisionstest;
 
-public class Particle {
+public class Particle extends QuadTree.QuadTreeObject {
 	private float x;
 	private float y;
 	private Vector2D v;
@@ -19,6 +19,16 @@ public class Particle {
 		float distance = deltaX * deltaX + deltaY * deltaY;
 		
 		if (distance <= (minDist * minDist)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean completelyInBoundry (float x, float y, float w, float h) {
+		if ((getX() - getR() > x && getX() + getR() < x + w) &&
+			(getY() - getR() > y && getY() + getR() < y + h)) {
 			return true;
 		}
 		
@@ -50,8 +60,10 @@ public class Particle {
 		return getY () + v.dy;
 	}
 	
+	@Override
 	public float getX () {return x;}
 	
+	@Override
 	public float getY () {return y;}
 	
 	public float getR () {return r;}

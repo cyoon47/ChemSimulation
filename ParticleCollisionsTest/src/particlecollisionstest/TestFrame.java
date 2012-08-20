@@ -16,17 +16,16 @@ public class TestFrame {
 		frame.add (canvas);
 		frame.pack ();
 		
-        canvas.addParticle (new Particle (90, 150, 4, 0, 10));
+        canvas.addParticle (new Particle (90, 150, 1, 0, 10));
 		canvas.addParticle (new Particle (20, 150, 2, 0, 20));
 		canvas.addParticle (new Particle (200, 150, -2, 0, 40));
 		canvas.addParticle (new Particle (380, 150, 4, 0, 20));
 		canvas.addParticle (new Particle (20, 20, 5, 1, 20));
 		
         Random rand = new Random ();
-        for(int i = 0; i < 1000; i++){
+        for(int i = 0; i < 10; i++){
 			canvas.addParticle (new Particle (rand.nextInt (998) + 1, rand.nextInt (998) + 1, rand.nextInt (5) - 2, rand.nextInt (5) - 2, rand.nextInt (7) + 1));
 		}
-
 
 		canvas.startAnimations ();
 	}
