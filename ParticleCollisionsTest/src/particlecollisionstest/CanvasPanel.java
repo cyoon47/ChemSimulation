@@ -67,7 +67,6 @@ public class CanvasPanel extends JPanel {
 	}
 	
 	private void updateParticle (Particle p) {
-		qTree.update (p);
 		float newX = p.getNewX ();
 		float newY = p.getNewY ();
 		
@@ -162,7 +161,7 @@ public class CanvasPanel extends JPanel {
 		
 		//Done
 		p.setPosition (p.getNewX (), p.getNewY ());
-		
+		qTree.update (p);
 	}
 	
 	@Override

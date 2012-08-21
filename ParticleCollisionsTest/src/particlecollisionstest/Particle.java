@@ -31,9 +31,9 @@ public class Particle extends QuadTree.QuadTreeObject {
 	}
 	
 	@Override
-	public boolean completelyInBoundry (float x, float y, float w, float h) {
-		if ((getX() - getR() >= x && getX() + getR() <= x + w) &&
-			(getY() - getR() >= y && getY() + getR() <= y + h)) {
+	public boolean completelyInBoundry (QuadTreeNode node) {
+		if ((getX() - getR() >= node.getX () && getX() + getR() <= node.getX () + node.getW ()) &&
+			(getY() - getR() >= node.getY () && getY() + getR() <= node.getY () + node.getH ())) {
 			return true;
 		}
 		

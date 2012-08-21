@@ -19,6 +19,7 @@ public class QuadTreeNode<T extends QuadTree.QuadTreeObject> {
 		this.w = w;
 		this.h = h;
 		this.hasObjectsWithin = false;
+		this.parentNode = parentNode;
 	}
 	
 	@Override
@@ -27,7 +28,7 @@ public class QuadTreeNode<T extends QuadTree.QuadTreeObject> {
 	}
 	
 	public String toString (String prefix) {
-		String buffer = prefix + "|->[hasObjectsWithin: " + hasObjectsWithin + " Object: " + (containedObject == null ? "NULL" : containedObject.toString ()) + "]\n";
+		String buffer = prefix + "|->[hasParentNode: " + (parentNode != null) + " hasObjectsWithin: " + hasObjectsWithin + " Object: " + (containedObject == null ? "NULL" : containedObject.toString ()) + "]\n";
 		if (this.childNodes != null) {
 			for (QuadTreeNode child : this.childNodes) {
 				if (child != null) {
