@@ -26,9 +26,14 @@ public class Particle extends QuadTree.QuadTreeObject {
 	}
 	
 	@Override
+	public String toString () {
+		return "(x, y) = (" + getX() + ", " + getY() + ") r = " + getR();
+	}
+	
+	@Override
 	public boolean completelyInBoundry (float x, float y, float w, float h) {
-		if ((getX() - getR() > x && getX() + getR() < x + w) &&
-			(getY() - getR() > y && getY() + getR() < y + h)) {
+		if ((getX() - getR() >= x && getX() + getR() <= x + w) &&
+			(getY() - getR() >= y && getY() + getR() <= y + h)) {
 			return true;
 		}
 		

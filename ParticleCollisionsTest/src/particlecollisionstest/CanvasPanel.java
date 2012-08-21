@@ -44,6 +44,7 @@ public class CanvasPanel extends JPanel {
 	
 	public void addParticle (Particle p) {
 		particles.add (p);
+		qTree.insert (p);
 	}
 	
 	private float CalculateSystemEnergy () {
@@ -66,6 +67,7 @@ public class CanvasPanel extends JPanel {
 	}
 	
 	private void updateParticle (Particle p) {
+		qTree.update (p);
 		float newX = p.getNewX ();
 		float newY = p.getNewY ();
 		
@@ -76,21 +78,9 @@ public class CanvasPanel extends JPanel {
 		if (newY - p.getR () < 0 || newY + p.getR () > height) {
 			p.setVelocity (p.getVelocity ().dx, -p.getVelocity ().dy);
 		}
-				
-		/*newX = p.getNewX ();
-		newY = p.getNewY ();
-		
-		while (newX - p.getR () < 0 || newX + p.getR () > width || newY - p.getR () < 0 || newY + p.getR () > height) {
-			newX = p.getNewX ();
-			newY = p.getNewY ();
-			p.setPosition (newX, newY);
-			updated = true;
-		}*/
 		
 		//Collision culling here
 		//...
-		qTree.createTree (particles);
-		
 		
 		//Collision
 		for (Particle o : particles) {
@@ -180,17 +170,15 @@ public class CanvasPanel extends JPanel {
 		super.paintComponent (g);
 		Graphics2D g2 = (Graphics2D) g;
 		
-		System.out.println ("Number of lines: " + qTree.getGraphicalView ().size ());
-		for (int i = 0; i < qTree.getGraphicalView ().size (); i++) {
-			g2.draw ((Shape) qTree.lines.get (i));
+		ArrayList <Shape> lines = qTree.getLines ();
+		for (int i = 0; i < lines.size (); i++) {
+			g2.draw ((Shape) lines.get (i));
 		}
 		
 		if (particles.size () > 0) {
 			for (int i = 0; i < particles.size (); i++) {
 				Particle p = particles.get (i);
 				g2.fill (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
-				
-				
 			}
 		}
 	}
