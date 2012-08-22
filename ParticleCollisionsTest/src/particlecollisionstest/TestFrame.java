@@ -12,7 +12,7 @@ public class TestFrame {
 		frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 		frame.setVisible (true);
 		
-		canvas = new CanvasPanel (1000, 1000, 20);
+		canvas = new CanvasPanel (1000, 1000, 60);
 		frame.add (canvas);
 		frame.pack ();
 		
@@ -23,7 +23,7 @@ public class TestFrame {
 		canvas.addParticle (new Particle (20, 20, 5, 3, 20));
 		
         Random rand = new Random ();
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < 10; i++){
 			//canvas.addParticle (new Particle (rand.nextInt (998) + 1, rand.nextInt (998) + 1, rand.nextInt (5) - 2, rand.nextInt (5) - 2, rand.nextInt (7) + 1));
 		}
 

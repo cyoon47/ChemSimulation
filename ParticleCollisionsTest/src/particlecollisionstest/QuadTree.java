@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 public class QuadTree<T extends QuadTree.QuadTreeObject> {
 
-	private boolean debugInsert = true;
-	private boolean debugUpdate = true;
+	private boolean debugInsert = false;
+	private boolean debugUpdate = false;
 	private float w;
 	private float h;
 	private QuadTreeNode treeHead;
@@ -86,105 +86,128 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 		return lines;
 	}
 
-	public void insert (T object) {
-		insert (object, treeHead);
-	}
-
 	private void logInsert (String message) {
 		if (debugInsert) {
 			System.out.println ("[Insert] " + message);
 		}
 	}
 
-	private void handleAffectedObjectAt (QuadTreeNode node) {
-		if (node.containedObject != null) {
-			QuadTreeObject affectedObject = node.removeContainedObject ();
-			logInsert ("Reallocating affected object " + affectedObject + " into children");
-			if (!insert ((T) affectedObject, node)) {
-				logInsert ("Failed to reallocate " + affectedObject + " into children of " + node);
-			}
+	private boolean childrenHasAnyObjects (QuadTreeNode node) {
+		if (node.childNodes != null) {
+			return node.childNodes[0].hasObjectsWithin || node.childNodes[1].hasObjectsWithin || node.childNodes[2].hasObjectsWithin || node.childNodes[3].hasObjectsWithin;
 		}
-	}
-
-	private boolean insert (T object, QuadTreeNode node) {
-
-		if (object.completelyInBoundry (node)) {
-			logInsert (object + " Insert Attempt");
-			if (!node.hasObjectsWithin) {
-				node.setContainedObject (object);
-
-				//Successful insert
-				node.hasObjectsWithin = true;
-				return true;
-			}
-			else {
-				logInsert ("Objects present in branch");
-
-				//Subdivided?
-				boolean newlyDivided = node.childNodes == null;
-				if (newlyDivided) {
-					subdivideNode (node);
-					logInsert ("Subdividing");
-				}
-
-				//Handle affected object at node (if any)
-				handleAffectedObjectAt (node);
-
-				//Insert object into a child (if possible)
-				boolean reallocated = false;
-				for (int i = 0; i < node.childNodes.length; i++) {
-					logInsert ("Inserting " + object + " into child " + i);
-					reallocated = reallocated || insert (object, node.childNodes[i]);
-					if (reallocated) {
-						logInsert ("Successful insertion of object " + object + " to child " + i);
-						break;
-					}
-					else {
-						logInsert ("Failed insertion of object " + object + " to child " + i);
-					}
-				}
-
-				//Not possible to put object into a child
-				if (!reallocated) {
-					if (newlyDivided) {
-						//Cleanup unused subdivision
-						node.childNodes = null;
-					}
-					
-					logInsert ("Object " + object + " cannot fit into smaller quads, put back at original node");
-					if (node.containedObject == null) {
-						node.setContainedObject (object);
-					}
-					else {
-						logInsert ("Conflict!");
-						if (node != null && node.parentNode != null) {
-							logInsert ("Parent node conatins object ? " + (node.parentNode.containedObject != null));
-						}
-						do {
-							node = node.parentNode;
-
-						}
-						while (node != null && node.containedObject != null);
-
-						if (node != null) {
-							logInsert ("Conflict resolved!");
-							node.setContainedObject (object);
-						}
-					}
-
-					//Affected object handled
-					return true;
-				}
-
-				//Everything handled
-				return true;
-			}
-		}
-
-		//Not in bounds
 		return false;
 	}
 
+	/*Inserts object into a child
+	 * return true when successfull insertion to child
+	 * return false when cant insert into any child
+	 */
+	private boolean insertToAChild (T object, QuadTreeNode node) {
+		//Not in tree yet
+		if (node == null) {
+			object.setNode (treeHead);
+			node = object.getNode ();
+		}
+
+		if (node.childNodes == null) {
+			subdivideNode (node);
+			logInsert ("Subdividing");
+		}
+
+		for (int i = 0; i < node.childNodes.length; i++) {
+			logInsert ("Inserting " + object + " into child " + i);
+			if (insert (object, node.childNodes[i])) {
+				logInsert ("Successful insertion of object " + object + " to child " + i);
+				return true;
+			}
+			else {
+				logInsert ("Failed insertion of object " + object + " to child " + i);
+			}
+		}
+
+		return false;
+	}
+
+	/*Main insertion function (object being as deep as possible)
+	 * Used to combine all other insertion functions recursively
+	 * Flow:
+	 * 1)Insert object as deep as possible, regardless of existing objects
+	 * 2)Traverse up from deepest spot till an empty space is available
+	 */
+	private void insertToDeepestEmptyNode (T object, QuadTreeNode startNode) {
+		//Find deepest node
+		if (!insertToAChild (object, startNode)) {
+			logInsert ("Object " + object + " cannot fit into smaller quads, put back at parent node");
+			QuadTreeNode testingNode = startNode;
+
+			//Find nearest empty node
+			while (testingNode != null && testingNode.containedObject != null) {
+				logInsert ("Traversing up tree for empty spot");
+				testingNode = testingNode.parentNode;
+			}
+
+			//Nearest node is deepest node, trim unused leafs
+			if (!childrenHasAnyObjects (startNode)) {
+				startNode.childNodes = null;
+			}
+
+			if (testingNode != null) {
+				testingNode.setContainedObject (object);
+			}
+		}
+
+		startNode.hasObjectsWithin = true;
+	}
+
+	/*Starts insertion from a node, checking for bounds
+	 * returns true on successful insert
+	 * returns false when out of bounds
+	 */
+	private boolean insert (T object, QuadTreeNode node) {
+		logInsert ("Inserting " + object);
+		if (object.completelyInBoundry (node)) {
+			logInsert (object + " in bounds");
+
+			insertToDeepestEmptyNode (object, node);
+			return true;
+		}
+		else {
+			logInsert (object + " not in bounds");
+
+			//Not in bounds
+			return false;
+		}
+	}
+
+	/*
+	 * Insertion from top of tree
+	 */
+	public void insert (T object) {
+		insert (object, treeHead);
+	}
+	
+	private void deleteNode (QuadTreeNode node) {
+		if (node != null && node.containedObject == null) {
+			if (!childrenHasAnyObjects (node)) {
+				node.childNodes = null;
+				//node.hasObjectsWithin = false;
+				deleteNode (node.parentNode);
+			}
+		}
+	}
+
+	public void delete (T object) {
+		QuadTreeNode node = object.getNode ();
+		//Remove from tree
+		node.containedObject = null;
+		if (node.childNodes == null) {
+			node.hasObjectsWithin = false;
+		}
+		
+		deleteNode (node);
+	}
+	
 	private void logUpdate (String message) {
 		if (debugUpdate) {
 			System.out.println ("[Update] " + message);
@@ -197,39 +220,25 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 
 		if (node != null) {
 			logUpdate (object + " Exists in tree");
+			
+			delete (object);
 
-			//Remove from tree
-			node.containedObject = null;
-			if (node.childNodes != null) {
-				boolean hasObjects = false;
-				for (QuadTreeNode child : node.childNodes) {
-					hasObjects = hasObjects || child.hasObjectsWithin;
-				}
-
-				if (!hasObjects) {
-					node.childNodes = null;
-					node.hasObjectsWithin = false;
-				}
-			}
-			else {
-				node.hasObjectsWithin = false;
-			}
-
-			if (insert(object, node)/*object.completelyInBoundry (node)*/) {
-				logUpdate (object + " no update needed");
-				node.containedObject = object;
-				node.hasObjectsWithin = true;
+			if (insert (object, node)) {
+				logUpdate (object + " no reallocation needed, putting at deepest");
 			}
 			else {
 				logUpdate (object + " reallocating...");
+
+				//Find nearest parent where it fits
 				do {
 					node = node.parentNode;
 				}
 				while (node != null && !object.completelyInBoundry (node));
-
-				if (node != null) {//Insert from smallest node that it fits in
+				
+				//Insert from smallest node that it fits in
+				if (node != null) {
 					logUpdate ("Found possible node for " + object);
-					insert (object, node);
+					insertToDeepestEmptyNode (object, node);
 				}
 				else {
 					//Shouldnt reach here
@@ -244,6 +253,6 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 			insert (object);
 		}
 
-		System.out.println (this);
+		//logUpdate (this.toString ());
 	}
 }

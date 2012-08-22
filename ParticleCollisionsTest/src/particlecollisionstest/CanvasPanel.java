@@ -149,6 +149,7 @@ public class CanvasPanel extends JPanel {
 					p.setPosition (p.getNewX(), p.getNewY ());
 					o.setPosition (o.getNewX(), o.getNewY ());
 					
+					qTree.update (o);
 					logEnergyDebug ("After Collision");
 					//System.out.println ("==================================");
 					
