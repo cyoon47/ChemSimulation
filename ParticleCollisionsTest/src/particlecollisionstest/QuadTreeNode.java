@@ -59,6 +59,7 @@ public class QuadTreeNode<T extends QuadTree.QuadTreeObject> {
 	public void setContainedObject (T object) {
 		containedObject = object;
 		containedObject.setNode (this);
+		this.hasObjectsWithin = true;
 	}
 
 	public T removeContainedObject () {
