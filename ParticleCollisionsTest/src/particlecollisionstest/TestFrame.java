@@ -23,7 +23,7 @@ public class TestFrame {
 		canvas.addParticle (new Particle (20, 20, 5, 1, 20));
 		
         Random rand = new Random ();
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 50; i++){
 			canvas.addParticle (new Particle (rand.nextInt (998) + 1, rand.nextInt (998) + 1, rand.nextInt (5) - 2, rand.nextInt (5) - 2, rand.nextInt (7) + 1));
 		}
 

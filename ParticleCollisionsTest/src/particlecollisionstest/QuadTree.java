@@ -105,17 +105,11 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	private boolean insertToAChild (T object, QuadTreeNode node) {
 		if (node.childNodes == null) {
 			subdivideNode (node);
-			logInsert ("Subdividing");
 		}
 
 		for (int i = 0; i < node.childNodes.length; i++) {
-			logInsert ("Inserting " + object + " into child " + i);
 			if (insert (object, node.childNodes[i])) {
-				logInsert ("Successful insertion of object " + object + " to child " + i);
 				return true;
-			}
-			else {
-				logInsert ("Failed insertion of object " + object + " to child " + i);
 			}
 		}
 
@@ -131,12 +125,11 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	private void insertToDeepestEmptyNode (T object, QuadTreeNode startNode) {
 		//Find deepest node
 		if (!insertToAChild (object, startNode)) {
-			logInsert ("Object " + object + " cannot fit into smaller quads, put back at parent node");
+			//Cannot put deeper
 			QuadTreeNode testingNode = startNode;
 
-			//Find nearest empty node
+			//Traverse up to find nearest empty node
 			while (testingNode != null && testingNode.containedObject != null) {
-				logInsert ("Traversing up tree for empty spot");
 				testingNode = testingNode.parentNode;
 			}
 
@@ -158,16 +151,11 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	 * returns false when out of bounds
 	 */
 	private boolean insert (T object, QuadTreeNode node) {
-		logInsert ("Inserting " + object);
 		if (object.completelyInBoundry (node)) {
-			logInsert (object + " in bounds");
-
 			insertToDeepestEmptyNode (object, node);
 			return true;
 		}
 		else {
-			logInsert (object + " not in bounds");
-
 			//Not in bounds
 			return false;
 		}
@@ -190,7 +178,6 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	 * Preserves the tree so a deeper search can be carried out from the current node
 	 */
 	public void deleteDown (T object) {
-		logDelete ("Before delete: " + this.toString ());
 		QuadTreeNode node = object.getNode ();
 
 		//Remove from tree
@@ -198,12 +185,8 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 
 		//Only delete down
 		if (!childrenHasAnyObjects (node)) {
-			logDelete ("No objects below");
 			node.hasObjectsWithin = false;
 			node.childNodes = null;
-		}
-		else {
-			logDelete ("Possibly still have objects below");
 		}
 	}
 
@@ -212,9 +195,9 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	 */
 	public QuadTreeNode deleteUp (T object) {
 		QuadTreeNode node = object.getNode ();
-
+		
+		//Collapse unused children to parent
 		while (node.parentNode != null && !childrenHasAnyObjects (node.parentNode)) {
-			logDelete ("Collapsed to parent node");
 			node = node.parentNode;
 			node.hasObjectsWithin = false;
 			node.childNodes = null;
@@ -230,49 +213,36 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	}
 
 	public void update (T object) {
-		logUpdate ("Updating " + object);
 		QuadTreeNode node = object.getNode ();
 
 		if (node != null) {
-			logUpdate (object + " Exists in tree");
-
+			//Exists in tree
 			//Only delete down so insert can use existing subdivisions to check more efficiently
 			deleteDown (object);
-			logUpdate ("Before insert: " + this.toString ());
-			if (insert (object, node)) {
-				logUpdate (object + " no reallocation needed, putting at deepest");
-			}
-			else {
+			
+			//Check if reallocation needed. If not, try put deeper
+			if (!insert (object, node)) {
 				//Clean up unused subdivisions, then update node with next available one
 				node = deleteUp (object);
-				logUpdate ("After failed insert: " + this.toString ());
-				logUpdate (object + " reallocating...");
 
+				//Reallocation
 				//Find nearest parent where it fits, then fit to deepest
 				do {
 					node = node.parentNode;
 				}
 				while (node != null && !insert (object, node));
 
-				//Insert from smallest node that it fits in
-				if (node != null) {
-					logUpdate ("Found node for " + object);
-				}
-				else {
+				if (node == null) {
+					//No node available
 					//Shouldnt reach here
-					logUpdate ("No node found! Inserting from top again....");
 					insert (object);
 				}
 			}
 		}
 		else {
-			
 			//Insert to tree
 			//Most probably particles stuck at boundry or "oh no"
-			logUpdate ("Inserting " + object + " from top of tree");
 			insert (object);
 		}
-
-		logUpdate ("After update: " + this.toString ());
 	}
 }
