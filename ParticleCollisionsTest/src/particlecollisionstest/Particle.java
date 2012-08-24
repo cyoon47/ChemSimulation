@@ -40,6 +40,15 @@ public class Particle extends QuadTree.QuadTreeObject {
 		return false;
 	}
 	
+	@Override
+	public QuadTree.QuadTreeQuery getQuery () {
+		return (new QuadTree.QuadTreeQuery (
+			x + (v.dx < 0 ? v.dx : 0) - r, 
+			y + (v.dy < 0 ? v.dy : 0) - r, 
+			2 * r + v.dx, 
+			2 * r + v.dy));
+	}
+	
 	public final void setPosition (float x, float y) {
 		this.x = x;
 		this.y = y;

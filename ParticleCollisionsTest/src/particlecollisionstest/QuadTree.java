@@ -13,6 +13,35 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	private float h;
 	private QuadTreeNode treeHead;
 
+	public static class QuadTreeQuery {
+
+		public float x;
+		public float y;
+		public float w;
+		public float h;
+
+		public QuadTreeQuery (float x, float y, float w, float h) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+		}
+
+		private boolean valueInRange (float value, float min, float max) {
+			return (value >= min) && (value <= max);
+		}
+
+		public boolean intersects (QuadTreeNode node) {
+			boolean xOverlap = valueInRange (this.x, node.getX (), node.getX () + node.getW ())
+							   || valueInRange (node.getX (), this.x, this.x + this.w);
+
+			boolean yOverlap = valueInRange (this.y, node.getY (), node.getY () + node.getH ())
+							   || valueInRange (node.getY (), this.y, this.y + this.h);
+
+			return xOverlap && yOverlap;
+		}
+	}
+
 	public static abstract class QuadTreeObject {
 
 		private QuadTreeNode associatedLeaf;
@@ -26,6 +55,8 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 
 		public abstract boolean completelyInBoundry (QuadTreeNode node);
 
+		public abstract QuadTreeQuery getQuery ();
+
 		public void setNode (QuadTreeNode node) {
 			associatedLeaf = node;
 		}
@@ -34,7 +65,7 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 			if (associatedLeaf == null) {
 				System.out.println ("Not in tree!");
 			}
-			
+
 			return associatedLeaf;
 		}
 	}
@@ -195,14 +226,14 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	 */
 	public QuadTreeNode deleteUp (T object) {
 		QuadTreeNode node = object.getNode ();
-		
+
 		//Collapse unused children to parent
 		while (node.parentNode != null && !childrenHasAnyObjects (node.parentNode)) {
 			node = node.parentNode;
 			node.hasObjectsWithin = false;
 			node.childNodes = null;
 		}
-		
+
 		return node;
 	}
 
@@ -219,14 +250,13 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 			//Exists in tree
 			//Only delete down so insert can use existing subdivisions to check more efficiently
 			deleteDown (object);
-			
+
 			//Check if reallocation needed. If not, try put deeper
 			if (!insert (object, node)) {
 				//Clean up unused subdivisions, then update node with next available one
 				node = deleteUp (object);
 
 				//Reallocation
-				//Find nearest parent where it fits, then fit to deepest
 				do {
 					node = node.parentNode;
 				}
@@ -234,7 +264,6 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 
 				if (node == null) {
 					//No node available
-					//Shouldnt reach here
 					insert (object);
 				}
 			}
@@ -244,5 +273,29 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 			//Most probably particles stuck at boundry or "oh no"
 			insert (object);
 		}
+	}
+
+	public ArrayList<T> getObjectsWithinBound (QuadTreeQuery query) {
+		return getObjectsWithinBound (query, treeHead);
+	}
+
+	public ArrayList<T> getObjectsWithinBound (QuadTreeQuery query, QuadTreeNode node) {
+		ArrayList<T> objects = new ArrayList<> ();
+
+		if (query.intersects (node)) {
+			if (node.containedObject != null) {
+				objects.add ((T) node.containedObject);
+			}
+
+			if (node.childNodes != null) {
+				for (QuadTreeNode child : node.childNodes) {
+					if (child.hasObjectsWithin) {
+						objects.addAll (getObjectsWithinBound (query, child));
+					}
+				}
+			}
+		}
+
+		return objects;
 	}
 }

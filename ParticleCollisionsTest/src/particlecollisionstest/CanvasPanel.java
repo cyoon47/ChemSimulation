@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferStrategy;
 import java.util.*;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -13,14 +14,17 @@ public class CanvasPanel extends JPanel {
 	private boolean debugEnergy = false;
 	private float width;
 	private float height;
+	private BufferStrategy bs;
 	private Timer animator;
 	private ArrayList<Particle> particles;
 	private QuadTree qTree;
 
-	public CanvasPanel (int width, int height, int fps) {
+	public CanvasPanel (int width, int height, BufferStrategy bs, int fps) {
 		this.width = (float) width;
 		this.height = (float) height;
 		this.setPreferredSize (new Dimension (width, height));
+		this.bs = bs;
+		
 		qTree = new QuadTree (this.width, this.height);
 		particles = new ArrayList<> ();
 		animator = new Timer (1000 / fps, new ActionListener () {
@@ -30,6 +34,7 @@ public class CanvasPanel extends JPanel {
 					updateParticle (p);
 				}
 				repaint ();
+				//draw ();
 			}
 		});
 	}
@@ -79,10 +84,11 @@ public class CanvasPanel extends JPanel {
 		}
 
 		//Collision culling here
-		//...
+		ArrayList <Particle> possibleColliders = qTree.getObjectsWithinBound (p.getQuery ());
+		//System.out.println ("Reduced collision checks to " +  ((double) possibleColliders.size () / (double) (particles.size () - 1) * 100) + "%");
 
 		//Collision
-		for (Particle o : particles) {
+		for (Particle o : possibleColliders) {
 			if (p != o) {
 				if (p.collidesWith (o)) {
 					logEnergyDebug ("Initial");
@@ -161,16 +167,36 @@ public class CanvasPanel extends JPanel {
 		p.setPosition (p.getNewX (), p.getNewY ());
 		qTree.update (p);
 	}
+	
+	private void draw () {
+		Graphics2D g2 = (Graphics2D) bs.getDrawGraphics ();
+		g2.clearRect (0, 0, getWidth(), getHeight ());
+		
+		ArrayList<Shape> lines = qTree.getLines ();
+		for (int i = 0; i < lines.size (); i++) {
+			g2.draw ((Shape) lines.get (i));
+		}
+
+		if (particles.size () > 0) {
+			for (int i = 0; i < particles.size (); i++) {
+				Particle p = particles.get (i);
+				g2.fill (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
+			}
+		}
+		
+		g2.dispose ();
+		bs.show ();
+	}
 
 	@Override
 	public void paintComponent (Graphics g) {
 		super.paintComponent (g);
 		Graphics2D g2 = (Graphics2D) g;
-
-		ArrayList<Shape> lines = qTree.getLines ();
+		
+		/*ArrayList<Shape> lines = qTree.getLines ();
 		for (int i = 0; i < lines.size (); i++) {
 			g2.draw ((Shape) lines.get (i));
-		}
+		}*/
 
 		if (particles.size () > 0) {
 			for (int i = 0; i < particles.size (); i++) {

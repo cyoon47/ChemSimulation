@@ -11,8 +11,9 @@ public class TestFrame {
 		frame = new JFrame ("Collision");
 		frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 		frame.setVisible (true);
+		frame.createBufferStrategy (2);
 		
-		canvas = new CanvasPanel (1000, 1000, 60);
+		canvas = new CanvasPanel (1280, 1000, frame.getBufferStrategy (), 60);
 		frame.add (canvas);
 		frame.pack ();
 		
@@ -23,8 +24,8 @@ public class TestFrame {
 		canvas.addParticle (new Particle (20, 20, 5, 1, 20));
 		
         Random rand = new Random ();
-        for(int i = 0; i < 50; i++){
-			canvas.addParticle (new Particle (rand.nextInt (998) + 1, rand.nextInt (998) + 1, rand.nextInt (5) - 2, rand.nextInt (5) - 2, rand.nextInt (7) + 1));
+        for(int i = 0; i < 10000; i++){
+			canvas.addParticle (new Particle (rand.nextInt (1278) + 1, rand.nextInt (998) + 1, rand.nextInt (5) - 2, rand.nextInt (5) - 2, rand.nextInt (2) + 1));
 		}
 
 		canvas.startAnimations ();
