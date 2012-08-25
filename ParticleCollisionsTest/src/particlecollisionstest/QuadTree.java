@@ -11,7 +11,7 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 	private boolean debugUpdate = false;
 	private float w;
 	private float h;
-	private QuadTreeNode treeHead;
+	public QuadTreeNode treeHead;
 
 	public static class QuadTreeQuery {
 
@@ -62,9 +62,9 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 		}
 
 		public QuadTreeNode getNode () {
-			if (associatedLeaf == null) {
+			/*if (associatedLeaf == null) {
 				System.out.println ("Not in tree!");
-			}
+			}*/
 
 			return associatedLeaf;
 		}
@@ -228,7 +228,10 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 		QuadTreeNode node = object.getNode ();
 
 		//Collapse unused children to parent
-		while (node.parentNode != null && !childrenHasAnyObjects (node.parentNode)) {
+		while (node.parentNode != null && 
+			   node.parentNode.containedObject == null && 
+			   !childrenHasAnyObjects (node.parentNode) ) {
+			
 			node = node.parentNode;
 			node.hasObjectsWithin = false;
 			node.childNodes = null;
@@ -257,10 +260,10 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 				node = deleteUp (object);
 
 				//Reallocation
-				do {
+				while (node != null && !insert (object, node)) {
 					node = node.parentNode;
 				}
-				while (node != null && !insert (object, node));
+				
 
 				if (node == null) {
 					//No node available
@@ -275,12 +278,13 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 		}
 	}
 
-	public ArrayList<T> getObjectsWithinBound (QuadTreeQuery query) {
-		return getObjectsWithinBound (query, treeHead);
+	public ArrayList<T> getObjectsWithinBound (QuadTreeObject originalObj) {
+		return getObjectsWithinBound (originalObj, treeHead);
 	}
 
-	public ArrayList<T> getObjectsWithinBound (QuadTreeQuery query, QuadTreeNode node) {
+	public ArrayList<T> getObjectsWithinBound (QuadTreeObject originalObj, QuadTreeNode node) {
 		ArrayList<T> objects = new ArrayList<> ();
+		QuadTreeQuery query = originalObj.getQuery ();
 
 		if (query.intersects (node)) {
 			if (node.containedObject != null) {
@@ -290,7 +294,7 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 			if (node.childNodes != null) {
 				for (QuadTreeNode child : node.childNodes) {
 					if (child.hasObjectsWithin) {
-						objects.addAll (getObjectsWithinBound (query, child));
+						objects.addAll (getObjectsWithinBound (originalObj, child));
 					}
 				}
 			}

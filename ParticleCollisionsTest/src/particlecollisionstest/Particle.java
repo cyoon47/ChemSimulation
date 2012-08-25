@@ -45,8 +45,8 @@ public class Particle extends QuadTree.QuadTreeObject {
 		return (new QuadTree.QuadTreeQuery (
 			x + (v.dx < 0 ? v.dx : 0) - r, 
 			y + (v.dy < 0 ? v.dy : 0) - r, 
-			2 * r + v.dx, 
-			2 * r + v.dy));
+			2 * r + (v.dx < 0 ? -v.dx : v.dx), 
+			2 * r + (v.dy < 0 ? -v.dy : v.dy)));
 	}
 	
 	public final void setPosition (float x, float y) {
