@@ -263,7 +263,6 @@ public class QuadTree<T extends QuadTree.QuadTreeObject> {
 				while (node != null && !insert (object, node)) {
 					node = node.parentNode;
 				}
-				
 
 				if (node == null) {
 					//No node available

@@ -46,7 +46,7 @@ public class CanvasPanel extends JPanel {
 	public void stopAnimations () {
 		animator.stop ();
 	}
-
+	
 	public void addParticle (Particle p) {
 		particles.add (p);
 		qTree.insert (p);
@@ -150,9 +150,9 @@ public class CanvasPanel extends JPanel {
 
 					logEnergyDebug ("After Collision");
 
-					if (p.collidesWith (o)) {
+					/*if (p.collidesWith (o)) {
 						System.out.println ("oh no");
-					}
+					}*/
 				}
 			}
 		}
@@ -178,12 +178,12 @@ public class CanvasPanel extends JPanel {
 			g2.draw ((Shape) lines.get (i));
 		}*/
 		
-		Random rand = new Random ();
+		//Random rand = new Random ();
 		if (particles.size () > 0) {
 			for (int i = 0; i < particles.size (); i++) {
 				Particle p = particles.get (i);
-				g2.setColor (new Color (rand.nextFloat (), rand.nextFloat (), rand.nextFloat ()));
-				g2.draw (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
+				//g2.setColor (new Color (rand.nextFloat (), rand.nextFloat (), rand.nextFloat ()));
+				g2.fill (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
 			}
 		}
 		

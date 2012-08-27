@@ -27,7 +27,7 @@ public class TestFrame {
 		
         Random rand = new Random ();
         for(int i = 0; i < 10000; i++){
-			canvas.addParticle (new Particle (width * haltonSequence (i, 2), height * haltonSequence (i, 3), rand.nextInt (5) - 2, rand.nextInt (5) - 2, 2f));
+			canvas.addParticle (new Particle (width * haltonSequence (i, 2), height * haltonSequence (i, 3), rand.nextInt (5) - 2, rand.nextInt (5) - 2, 1f));
 		}
 
 		canvas.startAnimations ();
