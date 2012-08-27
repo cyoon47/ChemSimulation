@@ -15,7 +15,7 @@ public class TestFrame {
 		frame.setVisible (true);
 		frame.createBufferStrategy (2);
 		
-		canvas = new CanvasPanel (width, height, frame.getBufferStrategy (), 60);
+		canvas = new CanvasPanel (width, height, frame.getBufferStrategy (), 60.0);
 		frame.add (canvas);
 		frame.pack ();
 		
@@ -26,11 +26,11 @@ public class TestFrame {
 		canvas.addParticle (new Particle (20, 20, 5, 1, 20));*/
 		
         Random rand = new Random ();
-        for(int i = 0; i < 10000; i++){
-			canvas.addParticle (new Particle (width * haltonSequence (i, 2), height * haltonSequence (i, 3), rand.nextInt (5) - 2, rand.nextInt (5) - 2, 1f));
+        for(int i = 0; i < 1000; i++){
+			canvas.addParticle (new Particle (width * haltonSequence (i, 2), height * haltonSequence (i, 3), rand.nextInt (5) - 2, rand.nextInt (5) - 2, rand.nextFloat () * 5));
 		}
 
-		canvas.startAnimations ();
+		canvas.startSimulation ();
 	}
 	
 	private float haltonSequence (int index, int base) {

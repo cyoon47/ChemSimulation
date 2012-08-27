@@ -15,6 +15,16 @@ public class Vector2D {
 		this.calcAngle = true;
 	}
 	
+	public void add (Vector2D o) {
+		this.dx += o.dx;
+		this.dy += o.dy;
+	}
+	
+	public void subtract (Vector2D o) {
+		this.dx -= o.dx;
+		this.dy -= o.dy;
+	}
+	
 	public float getMagnitude () {
 		if (this.calcMagnitude) {
 			this.magnitude = (float) Math.sqrt (this.dx * this.dx + this.dy * this.dy);

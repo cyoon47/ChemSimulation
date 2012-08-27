@@ -4,11 +4,15 @@ public class Particle extends QuadTree.QuadTreeObject {
 	private float x;
 	private float y;
 	private Vector2D v;
+	private Vector2D vBias;
+	private boolean hasBias;
 	private float r;
 	
 	public Particle (float x, float y, float dx, float dy, float r) {
 		this.setPosition (x, y);
 		this.setVelocity (dx, dy);
+		this.setBias (new Vector2D (0, 0));
+		this.hasBias = false;
 		this.r = r;
 	}
 	
@@ -24,6 +28,20 @@ public class Particle extends QuadTree.QuadTreeObject {
 		
 		return false;
 	}
+	
+	public final void setBias (Vector2D vBias) {
+		this.hasBias = true;
+		this.vBias = vBias;
+	}
+	
+	public Vector2D getBias () {
+		this.hasBias = false;
+		return this.vBias;
+	}
+	
+	public boolean hasBias () {
+		return this.hasBias;
+}
 	
 	@Override
 	public String toString () {
