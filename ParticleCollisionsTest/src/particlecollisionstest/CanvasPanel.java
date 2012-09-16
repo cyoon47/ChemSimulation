@@ -253,6 +253,7 @@ public class CanvasPanel extends JPanel implements Runnable {
 	public void paintComponent (Graphics g) {
 		super.paintComponent (g);
 		Graphics2D g2 = (Graphics2D) g;
+		//g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		/*ArrayList<Shape> lines = qTree.getLines ();
 		 for (int i = 0; i < lines.size (); i++) {
@@ -267,7 +268,11 @@ public class CanvasPanel extends JPanel implements Runnable {
 				//QuadTree.QuadTreeQuery query = p.getQuery ();
 				//g2.drawRect ((int) query.x, (int) query.y, (int) query.w, (int) query.h);
 				//g2.setColor (new Color (rand.nextFloat (), rand.nextFloat (), rand.nextFloat ()));
-				g2.fill (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
+				//g2.fill (new Ellipse2D.Float (p.getX () - p.getR (), p.getY () - p.getR (), p.getR () * 2, p.getR () * 2));
+				int x = (int) (p.getX () - p.getR () + 0.5f), y = (int) (p.getY () - p.getR () + 0.5f);
+				int l = (int) (p.getR () * 2 + 0.5f);
+				g2.drawOval (x, y, l, l);
+				g2.fillOval (x, y, l, l);
 			}
 		}
 		

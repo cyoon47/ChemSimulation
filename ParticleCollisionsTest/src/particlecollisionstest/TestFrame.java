@@ -9,7 +9,7 @@ public class TestFrame {
 	
 	public TestFrame () {
 		int width = 1920;
-		int height = 1080;
+		int height = 1200;
 		frame = new JFrame ("Collision");
 		frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 		frame.setVisible (true);
